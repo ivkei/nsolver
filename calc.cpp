@@ -82,37 +82,19 @@ static bool CanPerformPrev(std::vector<Operator> ops, std::vector<float> nums){
   return (n > 1 && nums.size() > 2) && (ops[n-2].priority >= ops[n-1].priority);
 }
 
-static void PerformPrev(std::vector<Operator>& ops, std::vector<float>& nums){
-  int n = ops.size();
-  Operator prev = ops[n-2];
-  ops.erase(ops.begin() + n-2);
-
-  float f1 = nums[nums.size()-3];
-  float f2 = nums[nums.size()-2];
-
-  nums.erase(nums.end()-2);
-  nums.erase(nums.end()-2); //Account for shift of end done by erase
-
-  float res = GetOpFunc(prev)(f1, f2);
-  nums.insert(nums.end()-1, res); // Put the result back
-
-  LOG_INFO("Performed: ", f1, ' ', prev.symbol, ' ', f2, " = ", res);
-}
-
 //Performs top operation from ops with 2 nums, doesnt check, assumes ops and nums are operatable on
 static void PerformCur(std::vector<Operator>& ops, std::vector<float>& nums){
-  int n = ops.size();
-  Operator cur = ops[n-1];
-  ops.erase(ops.begin() + n-1);
+  Operator cur = ops[ops.size()-1];
+  ops.pop_back();
 
   float f1 = nums[nums.size()-2];
   float f2 = nums[nums.size()-1];
 
-  nums.erase(nums.begin() + nums.size()-1);
-  nums.erase(nums.begin() + nums.size()-1); //Account for shift of end done by erase
+  nums.pop_back();
+  nums.pop_back();
 
   float res = GetOpFunc(cur)(f1, f2);
-  nums.insert(nums.end(), res); // Put the result back
+  nums.push_back(res); // Put the result back
 
   LOG_INFO("Performed: ", f1, ' ', cur.symbol, ' ', f2, " = ", res);
 }
@@ -164,7 +146,7 @@ float calc::Calculate(std::string expr){
     }
 
     //Parsing numbers
-    if ((static_cast<int>(expr[i]) >= static_cast<int>('0') && static_cast<int>(expr[i]) <= static_cast<int>('9')) || expr[i] == '-'){ //Checks
+    if ((static_cast<int>(expr[i]) >= static_cast<int>('0') && static_cast<int>(expr[i]) <= static_cast<int>('9')) || expr[i] == '-' || expr[i] == '.'){ //Checks
       int j = i;
       std::string parsed;
 
@@ -178,7 +160,17 @@ float calc::Calculate(std::string expr){
       nums.push_back(StringToFloat(parsed));
 
       //Perform previous?
-      if (CanPerformPrev(ops, nums)) PerformPrev(ops, nums);
+      if (CanPerformPrev(ops, nums)){
+        Operator curOp = ops[ops.size()-1];
+        float curNum = nums[nums.size()-1];
+        ops.pop_back();
+        nums.pop_back();
+
+        PerformCur(ops, nums);
+
+        ops.push_back(curOp);
+        nums.push_back(curNum);
+      }
 
       i = j;
       continue;
@@ -188,7 +180,7 @@ float calc::Calculate(std::string expr){
 
   }
 
-  while (ops.size() > 0 && nums.size() > 1){
+  while (!ops.empty() && nums.size() > 1){
     LOG_INFO("(After loop) Ridding of left overs");
     PerformCur(ops, nums);
   }
