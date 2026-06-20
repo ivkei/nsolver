@@ -3,7 +3,7 @@
 #include"calc.h"
 #include"logger.h"
 
-#include<cmath>
+#include<string>
 
 template<class T>
 static void BacktrackCombs(const std::vector<T>& v, int k, int start, std::vector<T>& current, std::vector<std::vector<T>>& res){
@@ -54,6 +54,7 @@ static std::vector<std::vector<T>> Permutations(std::vector<T> v){
 }
 
 //k is the size of permutations
+//Permuations of all combinations
 template<class T>
 static std::vector<std::vector<T>> Permutations(std::vector<T> v, int k){
   std::vector<std::vector<T>> combs;
@@ -75,48 +76,27 @@ static std::vector<std::vector<T>> Permutations(std::vector<T> v, int k){
 static std::string ApplySigns(int n, std::vector<std::vector<int>> nums, std::vector<std::vector<char>> signs){
   for (int i = 0; i < nums.size(); i++){
     for (int j = 0; j < signs.size(); j++){
-      LOG_INFO("(Iteration) i: ", i, " j: ", j);
-
+      LOG_INFO("===(Iteration) i: ", i, " j: ", j, "===");
       std::string expr;
-      int l = 0; //Signs index
-      if (signs[j][0] == '('){
-        expr += signs[j][0];
-        l=1;
-      }
-      expr += std::to_string(nums[i][0]);
 
-      for (int k = 1; k < nums[j].size(); k++, l++){
-        LOG_INFO("(Iteration) k: ", k, " l: ", l);
-
-        if (l >= signs[j].size()) LOG_ERROR("l >= signs[j].size()");
-        
-        if (signs[j][l] == '('){
-          LOG_INFO("Placing right par");
-          LOG_INFO("Current k: ", signs[j][l]);
-          LOG_INFO("k+1: ", signs[j][l+1]);
-
-          if (signs[j][l+1] == ')'){
-            //TODO: Account for this case
-          } else{
-            expr += signs[j][++l]; //Next
-            expr += signs[j][l-1]; //Par
-            expr += std::to_string(nums[i][k]); //Num
-          }
-
-        }else if (signs[j][l] == ')'){
-          expr += signs[j][l++]; //Par
-          expr += signs[j][l]; //Next op
-          expr += std::to_string(nums[i][k]); //Num
-
-        }else{
-          expr += signs[j][l];
-          expr += std::to_string(nums[i][k]);
-        }
-
-        LOG_INFO("Int expr: ", expr);
+      //Put in the signs
+      for  (int k = 0; k < signs[j].size(); k++){
+        expr+=signs[j][k];
       }
 
-      if (l != signs[j].size()) expr+=')'; //Place the last par
+      LOG_INFO("Expr after signs: ", expr);
+
+      //Put in the numbers
+      for  (int k = 0, l = 0; k <= expr.size(); k++){
+        LOG_INFO("===(Iteration) k: ", k, " l: ", l, "===");
+        if (k != expr.size() && expr[k] == '(') continue;
+        if (k != 0 && expr[k-1] == ')') continue;
+        auto num = std::to_string(nums[i][l]);
+        expr.insert(expr.begin()+(k++), num.begin(), num.end());
+        l++;
+
+        LOG_INFO("Expr in nums loop: ", expr);
+      }
 
       LOG_INFO("Expr: ", expr);
 
