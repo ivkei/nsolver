@@ -4,6 +4,7 @@
 #include"logger.h"
 
 #include<string>
+#include<cmath>
 
 template<class T>
 static void BacktrackCombs(const std::vector<T>& v, int k, int start, std::vector<T>& current, std::vector<std::vector<T>>& res){
@@ -63,6 +64,7 @@ static std::vector<std::vector<T>> Permutations(std::vector<T> v, int k){
   combs = Combinations(v, k);
 
   for (int i = 0; i < combs.size(); i++){
+    LOG_INFO("(Progress of permutations) ", 100*(i/combs.size()));
     auto perms = Permutations(combs[i]);
     res.insert(res.end(), perms.begin(), perms.end());
   }
@@ -76,29 +78,25 @@ static std::vector<std::vector<T>> Permutations(std::vector<T> v, int k){
 static std::string ApplySigns(int n, std::vector<std::vector<int>> nums, std::vector<std::vector<char>> signs){
   for (int i = 0; i < nums.size(); i++){
     for (int j = 0; j < signs.size(); j++){
-      LOG_INFO("===(Iteration) i: ", i, " j: ", j, "===");
       std::string expr;
 
+      if ((i*j + j) % ((nums.size()*signs.size())/10) == 0){
+        LOG_INFO("(Checked possibilities) ", std::round(10000*((float)i/(float)nums.size()))/100, "%");
+      }
+
       //Put in the signs
-      for  (int k = 0; k < signs[j].size(); k++){
+      for (int k = 0; k < signs[j].size(); k++){
         expr+=signs[j][k];
       }
 
-      LOG_INFO("Expr after signs: ", expr);
-
       //Put in the numbers
       for  (int k = 0, l = 0; k <= expr.size(); k++){
-        LOG_INFO("===(Iteration) k: ", k, " l: ", l, "===");
         if (k != expr.size() && expr[k] == '(') continue;
         if (k != 0 && expr[k-1] == ')') continue;
         auto num = std::to_string(nums[i][l]);
         expr.insert(expr.begin()+(k++), num.begin(), num.end());
         l++;
-
-        LOG_INFO("Expr in nums loop: ", expr);
       }
-
-      LOG_INFO("Expr: ", expr);
 
       if (calc::Calculate(expr) == n) return expr;
     }
@@ -108,20 +106,19 @@ static std::string ApplySigns(int n, std::vector<std::vector<int>> nums, std::ve
 }
 
 static std::vector<std::vector<char>> IncludePars(const std::vector<std::vector<char>>& signs){
-  LOG_INFO("signs.size(): ", signs.size());
   std::vector<std::vector<char>> res;
 
-  //TODO: multiple sets
   for (int i = 0; i < signs.size(); i++){
     std::vector<std::vector<char>> withAllPars;
     std::vector<char> cur = signs[i];
 
-    LOG_INFO("(IncludePars Progress) ", i, "/", signs.size());
-
     for (int j = 0; j < cur.size(); j++){
+      if (j > 0 && cur[j-1] == ')') continue; //Dont place ( after )
+
       cur.insert(cur.begin()+j, '(');
 
       for (int k = j+1; k <= cur.size(); k++){
+        if (k < cur.size() && cur[k] == '(') continue;
         cur.insert(cur.begin()+k, ')');
 
         withAllPars.push_back(cur);
@@ -139,13 +136,33 @@ static std::vector<std::vector<char>> IncludePars(const std::vector<std::vector<
 }
 
 std::string nsolver::BruteForce(int n, std::vector<int> v){
+  std::vector<char> signs = {'*', '-', '+', '/'};
+  std::vector<char> signsPermuted;
+  for (int i = 0; i < v.size()-1; i++){ //Copies of signs
+    signsPermuted.insert(signsPermuted.end(), signs.begin(), signs.end());
+  }
+
   auto nums = Permutations<int>(v);
-  auto signs = Permutations<char>({'*', '-', '+', '/'}, 3);
-  signs = IncludePars(signs);
-  //TODO: make work with arbitrary amount of signs (Extend combinations to produce of any size
+  auto signPerms = Permutations<char>(signsPermuted, v.size()-1);
 
-  LOG_INFO("Got signs and terms");
+  for (int i = 0; i < v.size()-2; i++){
+    signPerms = IncludePars(signPerms);
+  }
 
-  return ApplySigns(n, nums, signs);
+  return ApplySigns(n, nums, signPerms);
+}
+
+std::string nsolver::FastBruteForce(int n, std::vector<int> v){
+  std::vector<char> signs = {'*', '-', '+', '/'};
+  std::vector<char> signsPermuted;
+  for (int i = 0; i < v.size()-1; i++){
+    signsPermuted.insert(signsPermuted.end(), signs.begin(), signs.end());
+  }
+
+  auto nums = Permutations<int>(v);
+  auto signPerms = Permutations<char>(signsPermuted, v.size()-1);
+  signPerms = IncludePars(signPerms);
+
+  return ApplySigns(n, nums, signPerms);
 }
 

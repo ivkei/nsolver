@@ -8,4 +8,7 @@ namespace nsolver{
 //Return "" if nothing was found
 std::string BruteForce(int n, std::vector<int> v);
 
+//Way faster but doesnt check every possible solution
+std::string FastBruteForce(int n, std::vector<int> v);
+
 }

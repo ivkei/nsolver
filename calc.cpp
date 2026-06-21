@@ -58,7 +58,6 @@ static float StringToFloat(std::string str){
     }
   }
 
-  LOG_INFO("StringToFloat() parsed: ", nParsed);
   return nParsed * (negate ? -1 : 1);
 }
 
@@ -95,8 +94,6 @@ static void PerformCur(std::vector<Operator>& ops, std::vector<float>& nums){
 
   float res = GetOpFunc(cur)(f1, f2);
   nums.push_back(res); // Put the result back
-
-  LOG_INFO("Performed: ", f1, ' ', cur.symbol, ' ', f2, " = ", res);
 }
 
 float calc::Calculate(std::string expr){
@@ -114,13 +111,10 @@ float calc::Calculate(std::string expr){
   
   //Over every char
   for (int i = 0; i < expr.size(); i++){
-    LOG_INFO("Iteration: ", i, "\tExpr: ", expr);
-
     //Ops into stack
     if (IsSign(expr, i)){
       Operator currentSign = {expr[i], Priority(expr[i])};
       ops.push_back(currentSign);
-      LOG_INFO("Operator: ", expr[i]);
       continue;
     }
 
@@ -133,8 +127,6 @@ float calc::Calculate(std::string expr){
         if (expr[j] == ')' && !(parsInParsCount--)){
           std::string inPars = expr.substr(i+1, j-i-1);
           float res = Calculate(inPars);
-
-          LOG_INFO("calc::Calculate() recursive res: ", res);
 
           nums.push_back(res);
           break;
@@ -181,13 +173,10 @@ float calc::Calculate(std::string expr){
   }
 
   while (!ops.empty() && nums.size() > 1){
-    LOG_INFO("(After loop) Ridding of left overs");
     PerformCur(ops, nums);
   }
 
   if (!nums.size()) LOG_ERROR("Invalid input to calc::Calculate(), no nums were computed!");
-
-  LOG_INFO("End of calc::Calculate() res: ", nums[0]);
 
   return nums[0];
 }
