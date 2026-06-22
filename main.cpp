@@ -5,10 +5,9 @@
 
 //TODO: non-brute force approaches?
 //TODO: optimize bruteforce?
-//TODO: 3, 3, 8, 8 doesnt work
-//TODO: logs in readme?
-//TODO: tell that you can disable logs
 //TODO: check readme
+//TODO: time complexity
+//TODO: 3, 3, 8, 8 doesnt work
 
 template<class T>
 T Prompt(std::string);

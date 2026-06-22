@@ -10,8 +10,10 @@ void LogToConsole(const std::string& preinfo, const std::string& color, TArgs&&.
     std::cout << "\033[0m" << std::endl;
   }
 
-#define LOG_ERROR(...) LogToConsole("[ERROR] (nsolver)", "\033[31m", __VA_ARGS__)
-#define LOG_INFO(...) LogToConsole("[INFO] (nsolver)", "\033[32m", __VA_ARGS__)
-#define LOG_WARNING(...) LogToConsole("[WARNING] (nsolver)", "\033[33m", __VA_ARGS__)
+#ifndef NSOLVER_DISABLE_LOGGER
+  #define LOG_ERROR(...) LogToConsole("[ERROR] (nsolver)", "\033[31m", __VA_ARGS__)
+  #define LOG_INFO(...) LogToConsole("[INFO] (nsolver)", "\033[32m", __VA_ARGS__)
+  #define LOG_WARNING(...) LogToConsole("[WARNING] (nsolver)", "\033[33m", __VA_ARGS__)
+#endif
 
 }
