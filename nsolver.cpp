@@ -76,10 +76,41 @@ static std::vector<std::vector<T>> Permutations(std::vector<T> v, int k){
   return res;
 }
 
+#define EPSILON 10e-5
+
+template<class T>
+static T Abs(T f){
+  if (f > 0) return f;
+  else return -f;
+}
+
+//Neither did I want this, trust
+//Does epsilon equal for floats
+template<class T, class U>
+static bool Eq(T v1, U v2){
+  return v1 == v2;
+}
+
+template<>
+bool Eq<float, float>(float v1, float v2){
+  return Abs<float>(v1 - v2) < EPSILON;
+}
+
+template<>
+bool Eq<float, int>(float v1, int v2){
+  return Abs<float>(v1 - static_cast<float>(v2)) < EPSILON;
+}
+
+template<>
+bool Eq<int, float>(int v1, float v2){
+  return Abs<float>(static_cast<float>(v1) - v2) < EPSILON;
+}
+
 //Signs must also have pars
 //Assumes the signs are already in proper format
 //Takes in perms
-static std::string ApplySigns(int n, std::vector<std::vector<int>> nums, std::vector<std::vector<char>> signs){
+template<class T>
+static std::string ApplySigns(T n, std::vector<std::vector<T>> nums, std::vector<std::vector<char>> signs){
   if (nums.size() == 1 && nums[0].size() == 1 && n == nums[0][0]) return std::to_string(n); //Just 1 number
 
   for (int i = 0; i < nums.size(); i++){
@@ -105,7 +136,7 @@ static std::string ApplySigns(int n, std::vector<std::vector<int>> nums, std::ve
         l++;
       }
 
-      if (nsolver::Calculate(expr) == n) return expr;
+      if (Eq<float, T>(nsolver::Calculate(expr), n)) return expr;
     }
   }
 
@@ -152,7 +183,8 @@ static std::vector<std::vector<char>> IncludePars(const std::vector<std::vector<
   return res;
 }
 
-std::string nsolver::BruteForce(int n, std::vector<int> v, int precision){
+template<class T>
+std::string nsolver::BruteForce(T n, std::vector<T> v, int precision){
   if (!v.size()) return "";
 
   std::vector<char> signs = {'*', '-', '+', '/'};
@@ -163,7 +195,7 @@ std::string nsolver::BruteForce(int n, std::vector<int> v, int precision){
 
   nsolver::LOG_INFO("Got signs!");
 
-  auto nums = Permutations<int>(v);
+  auto nums = Permutations<T>(v);
   auto signPerms = Permutations<char>(signsPermuted, v.size()-1);
 
   nsolver::LOG_INFO("Got permutations!");
@@ -176,5 +208,12 @@ std::string nsolver::BruteForce(int n, std::vector<int> v, int precision){
 
   nsolver::LOG_INFO("Got Pars!");
 
-  return ApplySigns(n, nums, signPerms);
+  return ApplySigns<T>(n, nums, signPerms);
 }
+
+//Predefine numerical templates (C++ doesnt do it if its in a source file)
+template
+std::string nsolver::BruteForce<float>(float, std::vector<float>, int precision);
+
+template
+std::string nsolver::BruteForce<int>(int, std::vector<int>, int);

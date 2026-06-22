@@ -5,9 +5,6 @@
 
 //TODO: non-brute force approaches?
 //TODO: optimize bruteforce?
-//TODO: check readme
-//TODO: time complexity
-//TODO: 3, 3, 8, 8 doesnt work
 
 template<class T>
 T Prompt(std::string);
@@ -49,14 +46,14 @@ int main(){
   //Output what parsed
   std::cout << "Your target number is " << n << std::endl;
   std::cout << "Your construction values are { ";
-  for (int i : vals){
+  for (auto i : vals){
     std::cout << i << " ";
   }
   std::cout << "}" << std::endl;
 
   std::cout << "Started!" << std::endl;
 
-  std::string res = nsolver::BruteForce(n, vals, 2);
+  std::string res = nsolver::BruteForce<int>(n, vals, 2);
 
   if (res == ""){
     std::cout << "No solution was found" << std::endl;
@@ -65,8 +62,9 @@ int main(){
   std::cout << n << " = " << res << std::endl;
 
   //Examples/Test cases
-  //std::cout << "Solution to 24, {1, 5, 5 ,5}: " << nsolver::BruteForce(24, {1,5,5,5}) << std::endl;
-  //std::cout << "Solution to 24, {1, 3, 4 ,6}: " << nsolver::BruteForce(24, {1,3,4,6}) << std::endl;
+  //std::cout << "Solution to 24, {1, 5, 5 ,5}: " << nsolver::BruteForce<int>(24, {1,5,5,5}) << std::endl;
+  //std::cout << "Solution to 24, {1, 3, 4 ,6}: " << nsolver::BruteForce<int>(24, {1,3,4,6}) << std::endl;
+  //std::cout << "Solution to 0.75, {1.5, 0.5, 3, 7}: " << nsolver::BruteForce<float>(0.75f, {0.5f, 1.5f, 7.0f, 8.0f}) << std::endl;
 
  return 0; 
 }

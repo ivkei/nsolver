@@ -1,3 +1,5 @@
+#pragma once
+
 #include<string>
 #include<vector>
 
@@ -9,6 +11,8 @@ namespace nsolver{
 //Precision determines the amount of pairs of parenthesis placed in, dont set it higher than 2 for the sake of you own computer (My 16GBs of RAM ran out :( when I tried)
 //The more the better
 //Make it a one for adequate precision and speed
-std::string BruteForce(int n, std::vector<int> v, int precision = 2);
+//T takes float or int
+template<class T>
+std::string BruteForce(T n, std::vector<T> v, int precision = 2);
 
 }
