@@ -5,6 +5,7 @@
 
 #include<string>
 #include<cmath>
+#include<algorithm>
 
 template<class T>
 static void BacktrackCombs(const std::vector<T>& v, int k, int start, std::vector<T>& current, std::vector<std::vector<T>>& res){
@@ -143,6 +144,15 @@ static std::string ApplySigns(T n, std::vector<std::vector<T>> nums, std::vector
   return "";
 }
 
+//Either target
+static bool AllAre(std::vector<char> str, std::vector<char> tar){
+  for (int i = 0; i < str.size(); i++){
+    if (std::find(tar.begin(), tar.end(), str[i]) == tar.end()) return false;
+  }
+
+  return true;
+}
+
 //Variable to display progress percentage for pars, updated in bruteforce
 int totalParsIterations = 1;
 int curParsIterations = 0;
@@ -153,6 +163,8 @@ static std::vector<std::vector<char>> IncludePars(const std::vector<std::vector<
   for (int i = 0; i < signs.size(); i++){
     std::vector<std::vector<char>> withAllPars;
     std::vector<char> cur = signs[i];
+
+    if (AllAre(cur, {'+'}) || AllAre(cur, {'-'}) || AllAre(cur, {'*'}) || AllAre(cur, {'+', '-'})) continue; //Optimizations
 
     if ((signs.size()/10 != 0) && i % (signs.size()/10) == 0){
       nsolver::LOG_INFO("(Putting Parenthesis) ",
@@ -165,7 +177,7 @@ static std::vector<std::vector<char>> IncludePars(const std::vector<std::vector<
 
       cur.insert(cur.begin()+j, '(');
 
-      for (int k = j+1; k <= cur.size(); k++){
+      for (int k = j+2; k <= cur.size(); k++){ //j+2 to avoid (()), optimization also
         if (k < cur.size() && cur[k] == '(') continue;
         cur.insert(cur.begin()+k, ')');
 

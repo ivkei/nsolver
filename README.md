@@ -49,7 +49,7 @@ Started!
 
 ## Use
 I organized everything, probably not in the most optimal way, so that it can be used in any project as a library, if you wish (without the main.cpp).
-* Note that if you are using `nsolver::BruteForce`, please don't put numbers higher than 2 for the precision, it will be safer for your PC.
+* Note that if you are using `nsolver::BruteForce`, please don't put numbers higher than 2 for the precision (especially with more than 4 construction numbers), it will be safer for your PC.
 
 ### Logging
 * To disable logging just define `NSOLVER_DISABLE_LOGGER`.

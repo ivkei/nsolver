@@ -1,7 +1,10 @@
 #include<iostream>
+#include<sstream>
+#include<chrono>
+
 #include"calc.h"
 #include"nsolver.h"
-#include<sstream>
+#include"logger.h"
 
 //TODO: non-brute force approaches?
 //TODO: optimize bruteforce?
@@ -53,7 +56,12 @@ int main(){
 
   std::cout << "Started!" << std::endl;
 
+  auto start = std::chrono::high_resolution_clock::now();
+
   std::string res = nsolver::BruteForce<int>(n, vals, 2);
+
+  auto end = std::chrono::high_resolution_clock::now();
+  nsolver::LOG_INFO("(Taken) ", (float)std::chrono::high_resolution_clock::duration(end - start).count()/1000000.0f, "ms");
 
   if (res == ""){
     std::cout << "No solution was found" << std::endl;
