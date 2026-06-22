@@ -20,7 +20,7 @@ static int Priority(char symbol){
     case 'x':
       return 2;
     default:
-      LOG_WARNING("Wrong symbol put into Priority()");
+      nsolver::LOG_WARNING("Wrong symbol put into Priority()");
       return -1;
   }
 }
@@ -70,7 +70,7 @@ static auto GetOpFunc(Operator op){
       case '+': return f1+f2;
       case '-': return f1-f2;
       default:
-        LOG_WARNING("Unknown operator");
+        nsolver::LOG_WARNING("Unknown operator");
         return -1.0f;
     }
   };
@@ -96,7 +96,7 @@ static void PerformCur(std::vector<Operator>& ops, std::vector<float>& nums){
   nums.push_back(res); // Put the result back
 }
 
-float calc::Calculate(std::string expr){
+float nsolver::Calculate(std::string expr){
   //Stacks for calculations
   std::vector<Operator> ops;
   std::vector<float> nums;
@@ -168,7 +168,7 @@ float calc::Calculate(std::string expr){
       continue;
     }
 
-    LOG_WARNING("Unknown char was found in expr in calc::Calculate()");
+    nsolver::LOG_WARNING("Unknown char was found in expr in calc::Calculate()");
 
   }
 

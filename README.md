@@ -1,2 +1,120 @@
 # nsolver
-If you have played the 24-game to sharpen your math skills, you know what this is!
+If you have played the 24-game to sharpen your math skills, you know what this is!  
+Long story short, I came across this game when reading [Introduction to Algebra, one of the AoPS books, by Rusczyk](https://artofproblemsolving.com/store/book/intro-algebra),
+and clearly, I thought, that it wouldn't take me more than 20 minutes to go through all examples in the book and construct 24 using 4 basic operations out of some following groups of number:  
+- 2, 3, 4, 6
+- 4, 4, 10, 10
+- 1, 5, 5, 5
+- 1, 3, 4, 6
+- 3, 3, 8, 8
+- There's much more!
+
+* Note that all 4 numbers have to be used exactly once.
+
+But at the end it took me 2 hours to solve, and not even all of them!  
+So I, like anyone would do in my situation, settled to create a program that will solve not just those for me, but also some groups of the following format:
+- 18, 15, 15, 16, 2 to get 1890
+- 11, 6, 12, 3, 10 to get 11
+- 423847, 973472, 123, 837432, 823974292 to get 703823651
+- (And obviously the hardest one) 10, 2 to get 5
+
+## Usage example
+```shell
+Enter the target number (e.g. 24): 1890
+Enter construction values (e.g. 1 5 5 5): 18 15 15 16 2
+Your target number is 1890
+Your construction values are { 18 15 15 16 2 }
+Started!
+[INFO] (nsolver) Got signs!
+[INFO] (nsolver) (Making Permutations) 0%
+[INFO] (nsolver) (Making Permutations) 10%
+[INFO] (nsolver) (Making Permutations) 20%
+[INFO] (nsolver) (Making Permutations) 30%
+[INFO] (nsolver) (Making Permutations) 40%
+[INFO] (nsolver) (Making Permutations) 50%
+[INFO] (nsolver) (Making Permutations) 60%
+[INFO] (nsolver) (Making Permutations) 70%
+[INFO] (nsolver) (Making Permutations) 80%
+[INFO] (nsolver) (Making Permutations) 90%
+[INFO] (nsolver) Got permutations!
+[INFO] (nsolver) (Putting Parenthesis) 0%
+[INFO] (nsolver) (Putting Parenthesis) 3.33%
+[INFO] (nsolver) (Putting Parenthesis) 6.67%
+[INFO] (nsolver) (Putting Parenthesis) 10%
+[INFO] (nsolver) (Putting Parenthesis) 13.33%
+[INFO] (nsolver) (Putting Parenthesis) 16.67%
+[INFO] (nsolver) (Putting Parenthesis) 20%
+[INFO] (nsolver) (Putting Parenthesis) 23.33%
+[INFO] (nsolver) (Putting Parenthesis) 26.67%
+[INFO] (nsolver) (Putting Parenthesis) 30%
+[INFO] (nsolver) (Putting Parenthesis) 33.33%
+[INFO] (nsolver) (Putting Parenthesis) 36.67%
+[INFO] (nsolver) (Putting Parenthesis) 40%
+[INFO] (nsolver) (Putting Parenthesis) 43.33%
+[INFO] (nsolver) (Putting Parenthesis) 46.67%
+[INFO] (nsolver) (Putting Parenthesis) 50%
+[INFO] (nsolver) (Putting Parenthesis) 53.33%
+[INFO] (nsolver) (Putting Parenthesis) 56.67%
+[INFO] (nsolver) (Putting Parenthesis) 60%
+[INFO] (nsolver) (Putting Parenthesis) 63.33%
+[INFO] (nsolver) Got Pars!
+[INFO] (nsolver) (Checked possibilities) 0%
+1890 = (18)*15*(15-16/2)
+```
+
+Or another one with numbers from the list: 
+```shell
+Enter the target number (e.g. 24): 703823651
+Enter construction values (e.g. 1 5 5 5): 423847 973472 123 837432 823974292
+Your target number is 703823651
+Your construction values are { 423847 973472 123 837432 823974292 }
+Started!
+[INFO] (nsolver) Got signs!
+[INFO] (nsolver) (Making Permutations) 0%
+[INFO] (nsolver) (Making Permutations) 10%
+[INFO] (nsolver) (Making Permutations) 20%
+[INFO] (nsolver) (Making Permutations) 30%
+[INFO] (nsolver) (Making Permutations) 40%
+[INFO] (nsolver) (Making Permutations) 50%
+[INFO] (nsolver) (Making Permutations) 60%
+[INFO] (nsolver) (Making Permutations) 70%
+[INFO] (nsolver) (Making Permutations) 80%
+[INFO] (nsolver) (Making Permutations) 90%
+[INFO] (nsolver) Got permutations!
+[INFO] (nsolver) (Putting Parenthesis) 0%
+[INFO] (nsolver) (Putting Parenthesis) 3.33%
+[INFO] (nsolver) (Putting Parenthesis) 6.67%
+[INFO] (nsolver) (Putting Parenthesis) 10%
+[INFO] (nsolver) (Putting Parenthesis) 13.33%
+[INFO] (nsolver) (Putting Parenthesis) 16.67%
+[INFO] (nsolver) (Putting Parenthesis) 20%
+[INFO] (nsolver) (Putting Parenthesis) 23.33%
+[INFO] (nsolver) (Putting Parenthesis) 26.67%
+[INFO] (nsolver) (Putting Parenthesis) 30%
+[INFO] (nsolver) (Putting Parenthesis) 33.33%
+[INFO] (nsolver) (Putting Parenthesis) 36.67%
+[INFO] (nsolver) (Putting Parenthesis) 40%
+[INFO] (nsolver) (Putting Parenthesis) 43.33%
+[INFO] (nsolver) (Putting Parenthesis) 46.67%
+[INFO] (nsolver) (Putting Parenthesis) 50%
+[INFO] (nsolver) (Putting Parenthesis) 53.33%
+[INFO] (nsolver) (Putting Parenthesis) 56.67%
+[INFO] (nsolver) (Putting Parenthesis) 60%
+[INFO] (nsolver) (Putting Parenthesis) 63.33%
+[INFO] (nsolver) Got Pars!
+[INFO] (nsolver) (Checked possibilities) 0%
+703823651 = (423847-973472*123+837432-(823974292))
+```
+
+## Use
+I organized everything, probably not in the most optimal way, so that it can be used in any project as a library, if you wish.
+* Note that if you are using nsolver::BruteForce, please don't put numbers higher than 2 for the precision, it will be safer for your PC
+
+## Compilation
+I just scribbled into the terminal:
+```sh
+clang++ calc.cpp nsolver.cpp main.cpp -o nsolver
+```
+
+## Thanks
+* [Introduction to Algebra by Rusczyk](https://artofproblemsolving.com/store/book/intro-algebra) for informing me of this puzzle, that was forever awaiting my program to be made, to be cracked.

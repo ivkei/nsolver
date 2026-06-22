@@ -22,7 +22,7 @@ static void BacktrackCombs(const std::vector<T>& v, int k, int start, std::vecto
 
 template<class T>
 static std::vector<std::vector<T>> Combinations(std::vector<T> v, int size){
-  if (size > v.size()) LOG_ERROR("(Combinations) size > v.size()");
+  if (size > v.size()) nsolver::LOG_ERROR("(Combinations) size > v.size()");
   if (size == v.size()) return {v};
 
   std::vector<std::vector<T>> res;
@@ -64,7 +64,11 @@ static std::vector<std::vector<T>> Permutations(std::vector<T> v, int k){
   combs = Combinations(v, k);
 
   for (int i = 0; i < combs.size(); i++){
-    LOG_INFO("(Progress of permutations) ", 100*(i/combs.size()));
+
+    if ((combs.size()/10 != 0) && i % (combs.size()/10) == 0){
+      nsolver::LOG_INFO("(Making Permutations) ", std::round(10000*((float)i/(float)combs.size()))/100, "%");
+    }
+
     auto perms = Permutations(combs[i]);
     res.insert(res.end(), perms.begin(), perms.end());
   }
@@ -76,12 +80,14 @@ static std::vector<std::vector<T>> Permutations(std::vector<T> v, int k){
 //Assumes the signs are already in proper format
 //Takes in perms
 static std::string ApplySigns(int n, std::vector<std::vector<int>> nums, std::vector<std::vector<char>> signs){
+  if (nums.size() == 1 && nums[0].size() == 1 && n == nums[0][0]) return std::to_string(n); //Just 1 number
+
   for (int i = 0; i < nums.size(); i++){
     for (int j = 0; j < signs.size(); j++){
       std::string expr;
 
-      if ((i*j + j) % ((nums.size()*signs.size())/10) == 0){
-        LOG_INFO("(Checked possibilities) ", std::round(10000*((float)i/(float)nums.size()))/100, "%");
+      if ((nums.size()*signs.size()/10 != 0) && (i*j + j) % ((nums.size()*signs.size())/10) == 0){
+        nsolver::LOG_INFO("(Checked possibilities) ", std::round(10000*((float)i/(float)nums.size()))/100, "%");
       }
 
       //Put in the signs
@@ -94,16 +100,21 @@ static std::string ApplySigns(int n, std::vector<std::vector<int>> nums, std::ve
         if (k != expr.size() && expr[k] == '(') continue;
         if (k != 0 && expr[k-1] == ')') continue;
         auto num = std::to_string(nums[i][l]);
-        expr.insert(expr.begin()+(k++), num.begin(), num.end());
+        expr.insert(expr.begin()+k, num.begin(), num.end());
+        k += num.size(); //Account for pasted number
         l++;
       }
 
-      if (calc::Calculate(expr) == n) return expr;
+      if (nsolver::Calculate(expr) == n) return expr;
     }
   }
 
   return "";
 }
+
+//Variable to display progress percentage for pars, updated in bruteforce
+int totalParsIterations = 1;
+int curParsIterations = 0;
 
 static std::vector<std::vector<char>> IncludePars(const std::vector<std::vector<char>>& signs){
   std::vector<std::vector<char>> res;
@@ -112,7 +123,13 @@ static std::vector<std::vector<char>> IncludePars(const std::vector<std::vector<
     std::vector<std::vector<char>> withAllPars;
     std::vector<char> cur = signs[i];
 
+    if ((signs.size()/10 != 0) && i % (signs.size()/10) == 0){
+      nsolver::LOG_INFO("(Putting Parenthesis) ",
+          std::round(10000*(((float)i+((float)(curParsIterations*signs.size())))/((float)signs.size()*totalParsIterations)))/100.0f, "%");
+    }
+
     for (int j = 0; j < cur.size(); j++){
+
       if (j > 0 && cur[j-1] == ')') continue; //Dont place ( after )
 
       cur.insert(cur.begin()+j, '(');
@@ -135,34 +152,29 @@ static std::vector<std::vector<char>> IncludePars(const std::vector<std::vector<
   return res;
 }
 
-std::string nsolver::BruteForce(int n, std::vector<int> v){
+std::string nsolver::BruteForce(int n, std::vector<int> v, int precision){
+  if (!v.size()) return "";
+
   std::vector<char> signs = {'*', '-', '+', '/'};
   std::vector<char> signsPermuted;
   for (int i = 0; i < v.size()-1; i++){ //Copies of signs
     signsPermuted.insert(signsPermuted.end(), signs.begin(), signs.end());
   }
 
+  nsolver::LOG_INFO("Got signs!");
+
   auto nums = Permutations<int>(v);
   auto signPerms = Permutations<char>(signsPermuted, v.size()-1);
 
-  for (int i = 0; i < v.size()-2; i++){
+  nsolver::LOG_INFO("Got permutations!");
+
+  totalParsIterations = v.size()-2;
+  for (int i = 0; i < (int)v.size()-2 && i < precision; i++){
+    curParsIterations = i;
     signPerms = IncludePars(signPerms);
   }
 
-  return ApplySigns(n, nums, signPerms);
-}
-
-std::string nsolver::FastBruteForce(int n, std::vector<int> v){
-  std::vector<char> signs = {'*', '-', '+', '/'};
-  std::vector<char> signsPermuted;
-  for (int i = 0; i < v.size()-1; i++){
-    signsPermuted.insert(signsPermuted.end(), signs.begin(), signs.end());
-  }
-
-  auto nums = Permutations<int>(v);
-  auto signPerms = Permutations<char>(signsPermuted, v.size()-1);
-  signPerms = IncludePars(signPerms);
+  nsolver::LOG_INFO("Got Pars!");
 
   return ApplySigns(n, nums, signPerms);
 }
-
