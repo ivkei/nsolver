@@ -2,12 +2,8 @@
 #include<sstream>
 #include<chrono>
 
-#include"calc.h"
 #include"nsolver.h"
 #include"logger.h"
-
-//TODO: non-brute force approaches?
-//TODO: optimize bruteforce?
 
 template<class T>
 T Prompt(std::string);
@@ -58,7 +54,7 @@ int main(){
 
   auto start = std::chrono::high_resolution_clock::now();
 
-  std::string res = nsolver::BruteForce<int>(n, vals, 2);
+  std::string res = nsolver::BruteForce<int>(n, vals, 1);
 
   auto end = std::chrono::high_resolution_clock::now();
   nsolver::LOG_INFO("(Taken) ", (float)std::chrono::high_resolution_clock::duration(end - start).count()/1000000.0f, "ms");

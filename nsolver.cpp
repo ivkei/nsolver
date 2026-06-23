@@ -212,7 +212,7 @@ std::string nsolver::BruteForce(T n, std::vector<T> v, int precision){
 
   nsolver::LOG_INFO("Got permutations!");
 
-  totalParsIterations = v.size()-2;
+  totalParsIterations = std::min((int)v.size()-2, precision);
   for (int i = 0; i < (int)v.size()-2 && i < precision; i++){
     curParsIterations = i;
     signPerms = IncludePars(signPerms);
