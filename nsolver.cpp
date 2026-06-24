@@ -107,6 +107,21 @@ bool Eq<int, float>(int v1, float v2){
   return Abs<float>(static_cast<float>(v1) - v2) < EPSILON;
 }
 
+template<class T>
+static std::string MergeOpsAndNums(std::string ops, std::vector<T> nums){
+  //Put in the numbers
+  for  (int i = 0, j = 0; i <= ops.size(); i++){
+    if (i != ops.size() && ops[i] == '(') continue;
+    if (i != 0 && ops[i-1] == ')') continue;
+    auto num = std::to_string(nums[j]);
+    ops.insert(ops.begin()+i, num.begin(), num.end());
+    i += num.size(); //Account for pasted number
+    j++;
+  }
+
+  return ops;
+}
+
 //Signs must also have pars
 //Assumes the signs are already in proper format
 //Takes in perms
@@ -127,15 +142,7 @@ static std::string ApplySigns(T n, std::vector<std::vector<T>> nums, std::vector
         expr+=signs[j][k];
       }
 
-      //Put in the numbers
-      for  (int k = 0, l = 0; k <= expr.size(); k++){
-        if (k != expr.size() && expr[k] == '(') continue;
-        if (k != 0 && expr[k-1] == ')') continue;
-        auto num = std::to_string(nums[i][l]);
-        expr.insert(expr.begin()+k, num.begin(), num.end());
-        k += num.size(); //Account for pasted number
-        l++;
-      }
+      expr = MergeOpsAndNums(expr, nums[i]);
 
       if (Eq<float, T>(nsolver::Calculate(expr), n)) return expr;
     }
@@ -229,3 +236,75 @@ std::string nsolver::BruteForce<float>(float, std::vector<float>, int precision)
 
 template
 std::string nsolver::BruteForce<int>(int, std::vector<int>, int);
+
+//The fast brute force
+
+//For fast brute force backtrack, a helper
+template<class T>
+static bool FastBruteForceBacktrack(T n, std::vector<T>& pool, std::string& expr);
+
+#define PERFORM(op)\
+  pool.insert(pool.begin(), first op second);\
+  curExpr = '(' + std::to_string(first) + #op + std::to_string(second) + ')';\
+  expr += curExpr;\
+  if (FastBruteForceBacktrack<T>(n, pool, expr)) return true;\
+  expr.erase(expr.size()-curExpr.size(), curExpr.size());\
+  pool.erase(pool.begin())
+
+template<class T>
+static void Swap(T& v1, T& v2){
+  T t = v1;
+  v1 = v2;
+  v2 = t;
+}
+
+template<class T>
+static bool FastBruteForceBacktrack(T n, std::vector<T>& pool, std::string& expr){
+  if (pool.size() == 1){
+    return pool[0] == n;
+  }
+
+  for (int i = 0; i < pool.size(); i++){
+    T first = pool[i];
+    pool.erase(pool.begin()+i);
+
+    for (int j = i; j < pool.size(); j++){ //not i+1 bc erase happened line above
+      T second = pool[j];
+      pool.erase(pool.begin()+j);
+
+      nsolver::LOG_INFO("(FastBTB Iteration) i: ", i, " j: ", j);
+      nsolver::LOG_INFO("(FastBTB expr) ", expr);
+      nsolver::LOG_INFO("(FastBTB first, second) ", first, ", ", second);
+
+      std::string curExpr;
+      PERFORM(*);
+      PERFORM(+);
+      PERFORM(-);
+      if (second != 0) PERFORM(/);
+
+      Swap<T>(first, second);
+      PERFORM(-);
+      if (second != 0) PERFORM(/);
+      Swap<T>(first, second);
+
+      pool.insert(pool.begin()+j, second);
+    }
+
+    pool.insert(pool.begin()+i, first);
+  }
+
+  return false;
+}
+
+template<class T>
+std::string nsolver::FastBruteForce(T n, std::vector<T> v){
+  std::string expr;
+  if (!FastBruteForceBacktrack<T>(n, v, expr)) return "";
+  return expr;
+}
+
+template
+std::string nsolver::FastBruteForce<float>(float, std::vector<float>);
+
+template
+std::string nsolver::FastBruteForce<int>(int, std::vector<int>);

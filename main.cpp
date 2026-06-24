@@ -5,6 +5,11 @@
 #include"nsolver.h"
 #include"logger.h"
 
+//TODO: what stays (another branch)?
+//TODO: Change readme?
+//TODO: make valid expr
+//TODO: fix errors
+
 template<class T>
 T Prompt(std::string);
 
@@ -54,7 +59,8 @@ int main(){
 
   auto start = std::chrono::high_resolution_clock::now();
 
-  std::string res = nsolver::BruteForce<int>(n, vals, 1);
+  //std::string res = nsolver::BruteForce<int>(n, vals, 2);
+  std::string res = nsolver::FastBruteForce<int>(n, vals);
 
   auto end = std::chrono::high_resolution_clock::now();
   nsolver::LOG_INFO("(Taken) ", (float)std::chrono::high_resolution_clock::duration(end - start).count()/1000000.0f, "ms");

@@ -15,4 +15,8 @@ namespace nsolver{
 template<class T>
 std::string BruteForce(T n, std::vector<T> v, int precision = 2);
 
+//Does the same as brute force but faster (hopefully...)
+template<class T>
+std::string FastBruteForce(T n, std::vector<T> v);
+
 }
