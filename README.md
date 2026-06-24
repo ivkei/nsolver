@@ -43,25 +43,24 @@ Enter the target number (e.g. 24): 0.75
 Enter construction values (e.g. 1 5 5 5): 0.5 1.5 7 8
 Your target number is 0.75
 Your construction values are { 0.5 1.5 7 8 }
-Started!
 0.75 = ((0.5)-1.5+7.0)/8.0
 ```
 
 ## Use
-I organized everything, probably not in the most optimal way, so that it can be used in any project as a library, if you wish (without the main.cpp).
-* Note that if you are using `nsolver::BruteForce`, please don't put numbers higher than 2 for the precision (especially with more than 4 construction numbers), it will be safer for your PC.
+I organized everything, so that it can be used in any project as a library, if you wish (without the main.cpp).
 
 ### Logging
-* To disable logging just define `NSOLVER_DISABLE_LOGGER`.
+* To disable logging just define `NSOLVER_DISABLE_LOGGER`, but that's mainly for the calculate function which shouldn't bother you.
 
 ## Compilation
 I just scribbled into the terminal:
 ```sh
 clang++ calc.cpp nsolver.cpp main.cpp -o nsolver
+./nsolver
 ```
 
 ## Time complexity for the curious
-* It's either O($n^n$) or O($n!$), depends on `precision` in `nsolver::BruteForce`.
+* It's just O($n^n$).
 
 ## Thanks
 * [Introduction to Algebra by Rusczyk](https://artofproblemsolving.com/store/book/intro-algebra) for informing me of this puzzle, that was forever awaiting my program to be made.

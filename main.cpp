@@ -1,14 +1,7 @@
 #include<iostream>
 #include<sstream>
-#include<chrono>
 
 #include"nsolver.h"
-#include"logger.h"
-
-//TODO: what stays (another branch)?
-//TODO: Change readme?
-//TODO: make valid expr
-//TODO: fix errors
 
 template<class T>
 T Prompt(std::string);
@@ -30,6 +23,12 @@ int Prompt<int>(std::string message){
 }
 
 template<>
+float Prompt<float>(std::string message){
+  std::string input = Prompt<std::string>(message);
+  return std::stold(input);
+}
+
+template<>
 std::vector<int> Prompt<std::vector<int>>(std::string message){
   std::string input = Prompt<std::string>(message);
   std::vector<int> res;
@@ -43,9 +42,23 @@ std::vector<int> Prompt<std::vector<int>>(std::string message){
   return res;
 }
 
+template<>
+std::vector<float> Prompt<std::vector<float>>(std::string message){
+  std::string input = Prompt<std::string>(message);
+  std::vector<float> res;
+  float i;
+
+  std::stringstream ss{input};
+  while (ss >> i){
+    res.push_back(i);
+  }
+  
+  return res;
+}
+
 int main(){
-  int n = Prompt<int>("Enter the target number (e.g. 24): ");
-  std::vector<int> vals = Prompt<std::vector<int>>("Enter construction values (e.g. 1 5 5 5): ");
+  auto n = Prompt<int>("Enter the target number (e.g. 24): ");
+  auto vals = Prompt<std::vector<int>>("Enter construction values (e.g. 1 5 5 5): ");
 
   //Output what parsed
   std::cout << "Your target number is " << n << std::endl;
@@ -55,15 +68,7 @@ int main(){
   }
   std::cout << "}" << std::endl;
 
-  std::cout << "Started!" << std::endl;
-
-  auto start = std::chrono::high_resolution_clock::now();
-
-  //std::string res = nsolver::BruteForce<int>(n, vals, 2);
-  std::string res = nsolver::FastBruteForce<int>(n, vals);
-
-  auto end = std::chrono::high_resolution_clock::now();
-  nsolver::LOG_INFO("(Taken) ", (float)std::chrono::high_resolution_clock::duration(end - start).count()/1000000.0f, "ms");
+  std::string res = nsolver::BruteForce<int>(n, vals);
 
   if (res == ""){
     std::cout << "No solution was found" << std::endl;
@@ -74,7 +79,7 @@ int main(){
   //Examples/Test cases
   //std::cout << "Solution to 24, {1, 5, 5 ,5}: " << nsolver::BruteForce<int>(24, {1,5,5,5}) << std::endl;
   //std::cout << "Solution to 24, {1, 3, 4 ,6}: " << nsolver::BruteForce<int>(24, {1,3,4,6}) << std::endl;
-  //std::cout << "Solution to 0.75, {1.5, 0.5, 3, 7}: " << nsolver::BruteForce<float>(0.75f, {0.5f, 1.5f, 7.0f, 8.0f}) << std::endl;
+  //std::cout << "Solution to 0.75, {1.5, 0.5, 8, 7}: " << nsolver::BruteForce<float>(0.75f, {0.5f, 1.5f, 7.0f, 8.0f}) << std::endl;
 
  return 0; 
 }
